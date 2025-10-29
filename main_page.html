@@ -156,6 +156,12 @@
             margin: 0 auto 2rem;
             display: block;
             animation: fadeInScale 0.8s ease;
+            transition: filter 0.25s ease;
+        }
+
+        /* Blur only when scrolled */
+        .profile-image.blurred {
+            filter: blur(6px);
         }
 
         @keyframes fadeInScale {
@@ -931,6 +937,22 @@
                 }
             });
         });
+
+        // Toggle hero image blur only on scroll
+        (function () {
+            const img = document.querySelector('.profile-image');
+            if (!img) return;
+            const onScroll = () => {
+                const scrolled = window.scrollY || document.documentElement.scrollTop;
+                if (scrolled > 10) {
+                    img.classList.add('blurred');
+                } else {
+                    img.classList.remove('blurred');
+                }
+            };
+            window.addEventListener('scroll', onScroll, { passive: true });
+            onScroll();
+        })();
     </script>
 </body>
 </html>
