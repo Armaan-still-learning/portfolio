@@ -938,20 +938,39 @@
             });
         });
 
-        // Toggle hero image blur only on scroll
+        // Toggle hero image blur based on hero visibility
         (function () {
             const img = document.querySelector('.profile-image');
-            if (!img) return;
-            const onScroll = () => {
-                const scrolled = window.scrollY || document.documentElement.scrollTop;
-                if (scrolled > 10) {
-                    img.classList.add('blurred');
-                } else {
-                    img.classList.remove('blurred');
-                }
-            };
-            window.addEventListener('scroll', onScroll, { passive: true });
-            onScroll();
+            const hero = document.querySelector('.hero');
+            if (!img || !hero) return;
+
+            // Ensure default is sharp on load
+            img.classList.remove('blurred');
+
+            if ('IntersectionObserver' in window) {
+                const observer = new IntersectionObserver((entries) => {
+                    const entry = entries[0];
+                    // If hero is mostly visible, keep image sharp
+                    if (entry.isIntersecting && entry.intersectionRatio > 0.6) {
+                        img.classList.remove('blurred');
+                    } else {
+                        img.classList.add('blurred');
+                    }
+                }, { threshold: [0, 0.6, 1] });
+                observer.observe(hero);
+            } else {
+                // Fallback to scrollY check if IO not supported
+                const onScroll = () => {
+                    const scrolled = window.scrollY || document.documentElement.scrollTop;
+                    if (scrolled > (hero.offsetHeight * 0.4)) {
+                        img.classList.add('blurred');
+                    } else {
+                        img.classList.remove('blurred');
+                    }
+                };
+                window.addEventListener('scroll', onScroll, { passive: true });
+                onScroll();
+            }
         })();
     </script>
 </body>
